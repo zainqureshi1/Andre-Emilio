@@ -111,7 +111,7 @@ public class AndreEmilioContract {
         //public static final String COLUMN_PARENT_ID = "parent_id";
         //public static final String COLUMN_DESCRIPTION = "description";
         //public static final String COLUMN_DISPLAY = "display";
-        //public static final String COLUMN_IMAGE= "image";
+        public static final String COLUMN_IMAGE= "image";
 
         public static final String COLUMN_JSON = "json";
 

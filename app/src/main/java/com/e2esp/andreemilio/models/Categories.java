@@ -1,13 +1,19 @@
-package com.e2esp.andreemilio.models.orders;
+package com.e2esp.andreemilio.models;
 
-public class DrawerSubItem {
+/**
+ * Created by Ali on 8/11/2017.
+ */
+
+public class Categories {
 
     private String section;
-    private int count = 0;
+    private int count;
+    private String icon;
 
-    public DrawerSubItem(String section, int count) {
+    public Categories(String section, int count, String icon) {
         this.section = section;
         this.count = count;
+        this.icon = icon;
     }
 
     public String getSection() {
@@ -23,8 +29,14 @@ public class DrawerSubItem {
     }
 
     public void setCount(int count) {
-
         this.count = count;
     }
 
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
 }

@@ -8,21 +8,47 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/margin_small"
-        android:paddingBottom="@dimen/margin_tiny" >
+        android:paddingBottom="@dimen/margin_tiny"
+        android:background="@color/white"
+        >
+        <!--<GridView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:numColumns="auto_fit"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:stretchMode="columnWidth"
+            android:columnWidth="100dp"
+            android:horizontalSpacing="10dp"
+            android:verticalSpacing="10dp"
+            >-->
+
 
         <ImageView
+            android:id="@+id/icon"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_centerInParent="true"
+            android:scaleType="fitCenter"
+            android:layout_margin="10dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/shirt"
+
+            />
+
+        <!--<ImageView
             android:id="@+id/icon"
             android:layout_width="@dimen/navigational_icon_size"
             android:layout_height="@dimen/navigational_icon_size"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/billing_info"
             android:layout_marginLeft="@dimen/margin_small"
             android:layout_marginRight="@dimen/margin_small"
+            android:src="@drawable/billing_info"
             android:background="@android:color/white">
-        </ImageView>
+        </ImageView>-->
 
-        <TextView
+       <!-- <TextView
             android:id="@+id/label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -34,7 +60,21 @@
             android:textSize="@dimen/text_size_small_upper"
             android:textColor="@color/black"
             android:lines="1" >
-        </TextView>
+        </TextView>-->
+
+
+        <TextView
+            android:id="@+id/label"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_centerInParent="true"
+            android:layout_margin="1dp"
+            android:gravity="center"
+            android:textSize="@dimen/text_size_small_upper"
+            android:textStyle="bold"
+            android:lines="2"
+            android:background="@color/black_transparent"
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/count"
@@ -48,6 +88,9 @@
             android:lines="1"
             android:visibility="invisible" >
         </TextView>
+
+        <!--</GridView>-->
+
 
     </RelativeLayout>
 

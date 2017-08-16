@@ -48,6 +48,7 @@ public class AndreEmilioDbHelper extends SQLiteOpenHelper {
                 AndreEmilioContract.CategoryEntry._ID + " INTEGER PRIMARY KEY, " +
                 AndreEmilioContract.CategoryEntry.COLUMN_ID + " INTEGER NOT NULL UNIQUE, " +
                 AndreEmilioContract.CategoryEntry.COLUMN_NAME + " TEXT, " +
+                AndreEmilioContract.CategoryEntry.COLUMN_IMAGE + " TEXT, " +
                 AndreEmilioContract.CategoryEntry.COLUMN_JSON + " TEXT);";
 
         final String SQL_CREATE_ORDER_TABLE = "CREATE TABLE " + AndreEmilioContract.OrdersEntry.TABLE_NAME + " (" +

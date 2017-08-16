@@ -4,10 +4,14 @@ import android.Manifest;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.StrictMode;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
@@ -16,8 +20,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
+import android.view.View;
 import android.widget.Toast;
 
+import com.e2esp.andreemilio.adapters.PageSliderAdapter;
 import com.e2esp.andreemilio.data.AndreEmilioContract;
 import com.e2esp.andreemilio.utilities.Utility;
 import com.google.android.gms.actions.SearchIntents;
@@ -40,6 +46,11 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerC
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
 
+    private static final int NUM_PAGES = 2;
+    private PagerAdapter mPagerAdapter;
+    private ViewPager mPager;
+    private TabLayout tabLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +60,17 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerC
 
         AndreEmilioSyncAdapter.initializeSyncAdapter(getApplicationContext());
         AndreEmilioSyncAdapter.syncImmediately(getApplicationContext());
+
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText("Home"));
+        tabLayout.addTab(tabLayout.newTab().setText("Categories"));
+        tabLayout.setTabTextColors(Color.WHITE, Color.WHITE);
+
+        mPager = (ViewPager) findViewById(R.id.pager);
+        PageSliderAdapter adapter = new PageSliderAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        mPager.setAdapter(adapter);
+        mPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
@@ -72,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerC
         }
 
         processIntent(getIntent());
+
     }
 
     @Override
@@ -90,6 +113,9 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerC
                         .commit();
                 break;
             case 1:
+                tabLayout.setVisibility(View.GONE);
+                mPager.setVisibility(View.GONE);
+                getSupportActionBar().setDisplayShowHomeEnabled(false);
                 final ProductsFragment productsFragment = ProductsFragment.newInstance(position);
                 productsFragment.setCategory(subItem);
                 fragmentManager.beginTransaction()
@@ -184,6 +210,13 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerC
         ActionBar actionBar = getSupportActionBar();
         //actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
+        /*if(mTitle.equals("Products")) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            //mDrawerToggle.setDrawerIndicatorEnabled(false);
+        }else{
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }*/
         actionBar.setTitle(mTitle);
     }
 
