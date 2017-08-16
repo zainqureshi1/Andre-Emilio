@@ -81,7 +81,6 @@ public class CategoriesFragment extends Fragment implements LoaderManager.Loader
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.fragment_categories, container, false);
-
         setUpView();
 
         return rootView;
@@ -99,8 +98,10 @@ public class CategoriesFragment extends Fragment implements LoaderManager.Loader
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         categoriesRecyclerView.setLayoutManager(layoutManager);*/
 
-        getActivity().getSupportLoaderManager().initLoader(CATEGORY_LOADER, null, this);
         categoriesRecyclerView.setAdapter(categoriesAdapter);
+
+        getActivity().getSupportLoaderManager().initLoader(CATEGORY_LOADER, null, this);
+
 
 
     }
@@ -152,7 +153,7 @@ public class CategoriesFragment extends Fragment implements LoaderManager.Loader
             default:
                 break;
         }
-        categoriesAdapter.notifyDataSetChanged();
+        //categoriesAdapter.notifyDataSetChanged();
     }
 
     @Override

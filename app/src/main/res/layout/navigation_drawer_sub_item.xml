@@ -16,7 +16,6 @@
             android:layout_height="@dimen/navigational_icon_size"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/billing_info"
             android:layout_marginLeft="@dimen/margin_small"
             android:layout_marginRight="@dimen/margin_small"
             android:background="@android:color/white">
@@ -47,6 +46,7 @@
             android:textColor="@color/black"
             android:lines="1"
             android:visibility="invisible" >
+
         </TextView>
 
     </RelativeLayout>

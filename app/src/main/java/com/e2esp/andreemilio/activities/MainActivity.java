@@ -50,6 +50,15 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerC
     private PagerAdapter mPagerAdapter;
     private ViewPager mPager;
     private TabLayout tabLayout;
+    private boolean backIcon = false;
+    private View.OnClickListener backClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+            displayMenuIcon(true);
+            Toast.makeText(MainActivity.this, "Back Click Listener Called", Toast.LENGTH_SHORT).show();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,9 +122,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerC
                         .commit();
                 break;
             case 1:
-                tabLayout.setVisibility(View.GONE);
-                mPager.setVisibility(View.GONE);
-                getSupportActionBar().setDisplayShowHomeEnabled(false);
+                displayMenuIcon(false);
                 final ProductsFragment productsFragment = ProductsFragment.newInstance(position);
                 productsFragment.setCategory(subItem);
                 fragmentManager.beginTransaction()
@@ -128,6 +135,30 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerC
                         .commit();
                 break;
         }
+    }
+
+    public void displayMenuIcon(boolean menuIcon){
+
+        if(!menuIcon) {
+
+            backIcon = true;
+            tabLayout.setVisibility(View.GONE);
+            mPager.setVisibility(View.GONE);
+            mNavigationDrawerFragment.displayMenuIcon(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            mNavigationDrawerFragment.setNavigationClick(backClickListener);
+        }else {
+            backIcon = false;
+            tabLayout.setVisibility(View.VISIBLE);
+            mPager.setVisibility(View.VISIBLE);
+            getSupportActionBar().setTitle(R.string.app_name);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            mNavigationDrawerFragment.displayMenuIcon(true);
+            mNavigationDrawerFragment.setNavigationClick(null);
+
+        }
+
     }
 
     @Override
@@ -143,11 +174,20 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerC
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id){
-            default:
-                break;
+        if(backIcon){
+            id = 1;
         }
-        return super.onOptionsItemSelected(item);
+        switch (id){
+            case 1:
+            if (backIcon) {
+                Toast.makeText(this, "Back Icon ", Toast.LENGTH_SHORT).show();
+                displayMenuIcon(true);
+            }
+            return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
     }
 
     private boolean backPressed = false;

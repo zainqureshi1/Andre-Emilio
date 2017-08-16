@@ -10,6 +10,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncRequest;
 import android.content.SyncResult;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -351,6 +354,7 @@ public class AndreEmilioSyncAdapter extends AbstractThreadedSyncAdapter {
                     }
                 }
 
+
                 //if ((sizePageProduct * pageProduct) < sizeProducts) {
                 // TODO : SYNC : Use above condition instead of following
                 if (count >= sizePageProduct) {
@@ -361,6 +365,8 @@ public class AndreEmilioSyncAdapter extends AbstractThreadedSyncAdapter {
                 }
             }
         });
+
+
     }
 
     private void finalizeSyncProducts() {
@@ -387,6 +393,7 @@ public class AndreEmilioSyncAdapter extends AbstractThreadedSyncAdapter {
                         ContentValues categoryValues = new ContentValues();
                         categoryValues.put(AndreEmilioContract.CategoryEntry.COLUMN_ID, category.getId());
                         categoryValues.put(AndreEmilioContract.CategoryEntry.COLUMN_NAME, category.getName());
+                        categoryValues.put(AndreEmilioContract.CategoryEntry.COLUMN_IMAGE, category.getImage());
                         categoryValues.put(AndreEmilioContract.CategoryEntry.COLUMN_JSON, gson.toJson(category));
 
                         categoriesValues.add(categoryValues);

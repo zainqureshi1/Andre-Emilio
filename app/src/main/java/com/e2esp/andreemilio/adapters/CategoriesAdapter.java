@@ -22,6 +22,7 @@ import com.e2esp.andreemilio.models.Categories;
 import com.e2esp.andreemilio.models.Home;
 import com.e2esp.andreemilio.models.orders.DrawerItem;
 import com.e2esp.andreemilio.models.orders.DrawerSubItem;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,7 +60,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
     public void onBindViewHolder(CategoriesItem holder, int position) {
 
         try {
-            holder.bindView(categoryList.get(position));
+            holder.bindView(categoryList.get(position),holder);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -89,21 +90,26 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
         }
 
         //set all the views here
-        public void bindView(Categories category) throws IOException {
+        public void bindView(Categories category,CategoriesItem holder) throws IOException {
 
             textView.setText(category.getSection());
             countView.setText(category.getCount()+"");
-            //imageView.setImageResource(category.getIcon());
-            //imageViewCover.setImageResource(home.getAds());
 
-            URL url = new URL(category.getIcon());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            if(category.getIcon() != null && category.getIcon().length() > 0) {
+                Log.d("Category Image", "Image: " + category.getIcon());
+                Picasso.with(context)
+                        .load(category.getIcon())
+                        .resize(300, 300)
+                        .centerCrop()
+                        .placeholder(android.R.color.transparent)
+                        .error(R.drawable.ic_action_cancel)
+                        .into(holder.imageView);
+            }
+            else {
 
-            imageView.setImageBitmap(myBitmap);
+                imageView.setImageResource(R.drawable.ic_action_cancel);
+
+            }
 
 
         }
