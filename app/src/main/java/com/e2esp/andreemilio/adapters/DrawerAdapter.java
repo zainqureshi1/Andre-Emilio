@@ -47,7 +47,7 @@ public class DrawerAdapter extends ExpandableRecyclerAdapter<DrawerItem, DrawerS
         this.drawerItems = drawerItems;
         this.drawerCallbacks = drawerCallbacks;
         this.layoutInflater = (LayoutInflater) context .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.colorSelected = context.getResources().getColor(R.color.colorPrimaryTransparent);
+        this.colorSelected = context.getResources().getColor(R.color.white);
     }
 
     @Override

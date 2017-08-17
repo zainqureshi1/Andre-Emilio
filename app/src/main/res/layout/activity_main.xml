@@ -17,7 +17,10 @@
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
             app:tabTextColor="@color/white"
-            android:elevation="6dp"/>
+            android:clickable="true"
+            android:elevation="6dp"
+            app:tabIndicatorColor="@color/white"
+            />
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"

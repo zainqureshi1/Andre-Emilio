@@ -74,11 +74,29 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerC
         tabLayout.addTab(tabLayout.newTab().setText("Home"));
         tabLayout.addTab(tabLayout.newTab().setText("Categories"));
         tabLayout.setTabTextColors(Color.WHITE, Color.WHITE);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         mPager = (ViewPager) findViewById(R.id.pager);
         PageSliderAdapter adapter = new PageSliderAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         mPager.setAdapter(adapter);
         mPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                mPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -152,6 +170,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerC
             tabLayout.setVisibility(View.VISIBLE);
             mPager.setVisibility(View.VISIBLE);
             getSupportActionBar().setTitle(R.string.app_name);
+            ProductsFragment productsFragment = ProductsFragment.newInstance(1);
+            productsFragment.hideSearch();
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             mNavigationDrawerFragment.displayMenuIcon(true);
@@ -180,8 +200,9 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerC
         switch (id){
             case 1:
             if (backIcon) {
-                Toast.makeText(this, "Back Icon ", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Back Icon ", Toast.LENGTH_SHORT).show();
                 displayMenuIcon(true);
+
             }
             return true;
             default:

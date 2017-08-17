@@ -15,6 +15,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -25,6 +26,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.e2esp.andreemilio.models.products.Product;
 import com.e2esp.andreemilio.interfaces.ListCallbacks;
@@ -57,6 +59,8 @@ public class ProductsFragment extends Fragment implements LoaderManager.LoaderCa
 
     private SwipeRefreshLayout mSwipeLayout;
     private RecyclerView mRecyclerView;
+    public MenuItem searchItem;
+    private SearchView searchView;
 
     private EndlessScrollListener scrollListener;
 
@@ -112,8 +116,12 @@ public class ProductsFragment extends Fragment implements LoaderManager.LoaderCa
         mAdapter = new ProductAdapter(getActivity().getApplicationContext(), R.layout.fragment_product_list_item, null, onClickListener);
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.list_products);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        /*LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(layoutManager);*/
+
+        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),2);
+
         mRecyclerView.setLayoutManager(layoutManager);
 
         mRecyclerView.setAdapter(mAdapter);
@@ -186,8 +194,8 @@ public class ProductsFragment extends Fragment implements LoaderManager.LoaderCa
         super.onCreateOptionsMenu(menu,inflater);
         inflater.inflate(R.menu.product_fragment_menu, menu);
 
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+         searchItem = menu.findItem(R.id.action_search);
+         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
         if (searchView != null) {
@@ -211,6 +219,13 @@ public class ProductsFragment extends Fragment implements LoaderManager.LoaderCa
                 searchView.setIconifiedByDefault(true);
             }
         }
+
+    }
+
+    public void hideSearch(){
+
+        //searchItem.setVisible(false);
+
 
     }
 

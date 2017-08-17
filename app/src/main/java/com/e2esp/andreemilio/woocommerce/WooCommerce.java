@@ -1,6 +1,7 @@
 package com.e2esp.andreemilio.woocommerce;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import com.e2esp.andreemilio.woocommerce.WCBuilder;
 import com.e2esp.andreemilio.models.orders.Count;
@@ -194,6 +195,7 @@ public class WooCommerce {
             }
             @Override
             public void failure(RetrofitError error) {
+
                 error.printStackTrace();
                 fetched.Callback(null, error);
             }

@@ -2,6 +2,7 @@ package com.e2esp.andreemilio.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,11 +41,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.e2esp.andreemilio.R;
+import com.e2esp.andreemilio.activities.MainActivity;
 import com.e2esp.andreemilio.adapters.CategoriesAdapter;
 import com.e2esp.andreemilio.adapters.HomeAdapter;
 import com.e2esp.andreemilio.data.AndreEmilioContract;
+import com.e2esp.andreemilio.interfaces.CategoriesCallbacks;
 import com.e2esp.andreemilio.interfaces.DrawerCallbacks;
 import com.e2esp.andreemilio.interfaces.NavigationDrawerCallbacks;
 import com.e2esp.andreemilio.models.Categories;
@@ -64,6 +68,7 @@ public class CategoriesFragment extends Fragment implements LoaderManager.Loader
     private RecyclerView categoriesRecyclerView;
     private ArrayList<Categories> categoriesList;
     private CategoriesAdapter categoriesAdapter;
+    private MainActivity mainActivity;
 
     private static final int CATEGORY_LOADER = 3;
     private static final String[] CATEGORY_PROJECTION = {
@@ -92,7 +97,12 @@ public class CategoriesFragment extends Fragment implements LoaderManager.Loader
         categoriesList = new ArrayList<>();
 
         categoriesRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-        categoriesAdapter = new CategoriesAdapter(getContext(), categoriesList);
+        categoriesAdapter = new CategoriesAdapter(getContext(), categoriesList, new CategoriesCallbacks() {
+            @Override
+            public void onCategorySelected(int position, String categoryName) {
+                categorySelected(position,categoryName);
+            }
+        });
 
         /*LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -102,7 +112,19 @@ public class CategoriesFragment extends Fragment implements LoaderManager.Loader
 
         getActivity().getSupportLoaderManager().initLoader(CATEGORY_LOADER, null, this);
 
+    }
 
+    public void categorySelected(int position, String categoryName){
+
+        FragmentManager fragmentManager = getFragmentManager();
+        //Toast.makeText(getContext(), "Category Selected " +categoryName, Toast.LENGTH_SHORT).show();
+
+        ((MainActivity) getActivity()).displayMenuIcon(false);
+        final ProductsFragment productsFragment = ProductsFragment.newInstance(position);
+        productsFragment.setCategory(categoryName);
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, productsFragment, "section")
+                .commit();
 
     }
 

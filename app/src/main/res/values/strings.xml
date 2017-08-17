@@ -103,7 +103,7 @@
     <string name="product_title_search">Search product</string>
     <string name="description_product">Description</string>
     <string name="price_const">Price: Rs%1$s Cost: Rs%2$s</string>
-    <string name="price">Rs%1$s</string>
+    <string name="price">Rs: %1$s</string>
     <string name="stock">%1$s Units</string>
     <string name="product_updated">Product Updated</string>
     <string name="product_updated_wip">Getting product information, please wait</string>

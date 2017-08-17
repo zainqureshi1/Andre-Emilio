@@ -17,6 +17,7 @@ import com.e2esp.andreemilio.R;
 import com.e2esp.andreemilio.expandablerecyclerview.ChildViewHolder;
 import com.e2esp.andreemilio.expandablerecyclerview.ExpandableRecyclerAdapter;
 import com.e2esp.andreemilio.expandablerecyclerview.ParentViewHolder;
+import com.e2esp.andreemilio.interfaces.CategoriesCallbacks;
 import com.e2esp.andreemilio.interfaces.DrawerCallbacks;
 import com.e2esp.andreemilio.models.Categories;
 import com.e2esp.andreemilio.models.Home;
@@ -41,12 +42,14 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
     private Context context;
     private LayoutInflater layoutInflater;
     private ArrayList<Categories> categoryList;
+    private CategoriesCallbacks categoriesCallbacks;
 
 
-    public CategoriesAdapter(Context context, ArrayList<Categories> categoryList) {
+    public CategoriesAdapter(Context context, ArrayList<Categories> categoryList,CategoriesCallbacks categoriesCallbacks) {
         this.context = context;
         this.layoutInflater = (LayoutInflater) context .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.categoryList = categoryList;
+        this.categoriesCallbacks = categoriesCallbacks;
 
     }
 
@@ -90,7 +93,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
         }
 
         //set all the views here
-        public void bindView(Categories category,CategoriesItem holder) throws IOException {
+        public void bindView(final Categories category, CategoriesItem holder) throws IOException {
 
             textView.setText(category.getSection());
             countView.setText(category.getCount()+"");
@@ -110,6 +113,13 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
                 imageView.setImageResource(R.drawable.ic_action_cancel);
 
             }
+
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    categoriesCallbacks.onCategorySelected(getAdapterPosition(),category.getSection());
+                }
+            });
 
 
         }

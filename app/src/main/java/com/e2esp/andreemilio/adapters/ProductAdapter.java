@@ -84,8 +84,6 @@ public class ProductAdapter extends CursorRecyclerViewAdapter<ProductAdapter.Vie
                 Log.d(LOG_TAG, "Image: " + product.getFeaturedSrc());
                 Picasso.with(mContext)
                         .load(product.getFeaturedSrc())
-                        .resize(300, 300)
-                        .centerCrop()
                         .placeholder(android.R.color.transparent)
                         .error(R.drawable.ic_action_cancel)
                         .into(holder.imageView);
@@ -94,13 +92,13 @@ public class ProductAdapter extends CursorRecyclerViewAdapter<ProductAdapter.Vie
             holder.txtName.setText(product.getTitle());
             holder.txtPrice.setText(mContext.getString(R.string.price, product.getPrice()));
             holder.txtStock.setText(mContext.getString(R.string.stock, String.valueOf(product.getStockQuantity())));
-            holder.txtSku.setText(product.getSku());
+            //holder.txtSku.setText(product.getSku());
 
             String description = product.getShortDescription().replaceAll("\\<.*?>","");
             description = description.replaceAll("[\\t\\n\\r]"," ");
             description = description.replaceAll("&nbsp;"," ");
 
-            holder.txtDescription.setText(description);
+            //holder.txtDescription.setText(description);
         }
     }
 
