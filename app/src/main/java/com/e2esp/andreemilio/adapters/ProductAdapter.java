@@ -84,6 +84,8 @@ public class ProductAdapter extends CursorRecyclerViewAdapter<ProductAdapter.Vie
                 Log.d(LOG_TAG, "Image: " + product.getFeaturedSrc());
                 Picasso.with(mContext)
                         .load(product.getFeaturedSrc())
+                        .resize(300,300)//This avoided the OutOfMemoryError
+                        .centerCrop()
                         .placeholder(android.R.color.transparent)
                         .error(R.drawable.ic_action_cancel)
                         .into(holder.imageView);

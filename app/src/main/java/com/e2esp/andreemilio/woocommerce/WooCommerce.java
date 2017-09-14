@@ -1,8 +1,17 @@
 package com.e2esp.andreemilio.woocommerce;
 
+import android.accounts.AccountManager;
+import android.content.Context;
+import android.os.Environment;
+import android.os.Handler;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.e2esp.andreemilio.models.orders.Notes;
+import com.e2esp.andreemilio.models.orders.OrderUpdate;
+import com.e2esp.andreemilio.utilities.Consts;
+import com.e2esp.andreemilio.utilities.Utility;
 import com.e2esp.andreemilio.woocommerce.WCBuilder;
 import com.e2esp.andreemilio.models.orders.Count;
 import com.e2esp.andreemilio.models.orders.Order;
@@ -17,16 +26,25 @@ import com.e2esp.andreemilio.interfaces.ListCallbacks;
 import com.e2esp.andreemilio.interfaces.ObjectCallbacks;
 import com.e2esp.andreemilio.models.products.Category;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import retrofit.RequestInterceptor;
+import retrofit2.Call;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -35,11 +53,17 @@ import retrofit.client.Response;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.QueryMap;
 import retrofit.mime.TypedByteArray;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+import com.google.gson.stream.JsonReader;
 
 import static com.e2esp.andreemilio.enums.RequestMethod.GET;
+import static java.security.AccessController.getContext;
 
 /**
  * Created by Zain on 2/20/17.
@@ -54,6 +78,7 @@ public class WooCommerce {
 
     private WCBuilder wcBuilder;
     private OAuthSigner OAuthSigner;
+    private Gson gson = new GsonBuilder().create();
 
     public static WooCommerce getInstance() {
         if (singleton == null) {
@@ -102,8 +127,185 @@ public class WooCommerce {
         @GET(Endpoints.ORDERS_ENDPOINT + "/{id}")
         void getOrder(@Path("id")String id,@QueryMap LinkedHashMap<String, String> options, Callback<Response> response);
 
-        @GET(Endpoints.ORDERS_ENDPOINT)
+        @GET(Endpoints.ORDERS_ENDPOINT )
         void getOrders(@QueryMap LinkedHashMap<String, String> options, Callback<Response> response);
+
+        @PUT(Endpoints.ORDERS_ENDPOINT)
+        void updateOrder(@QueryMap LinkedHashMap<String, String> options, Callback<Response> response);
+
+        @POST(Endpoints.ORDERS_ENDPOINT)
+        void insertOrder(@QueryMap LinkedHashMap<String, String> options, @Body OrderResponse order,Callback<Response> response);
+
+        /*@POST(Endpoints.ORDERS_ENDPOINT)
+        Call<OrderResponse> insertOrder(@Body OrderResponse order);*/
+
+    }
+
+    public void insertOrder(OrderResponse order,final ListCallbacks fetched){
+
+        /*StringBuilder builder = new StringBuilder();
+        builder.append(wcBuilder.isHttps() ? "https://" : "http://");
+        builder.append(wcBuilder.getBaseUrl() + "/");
+        builder.append("wc-api/v3");
+        Log.i("Insert Order builder",builder.toString());
+        RestAdapter adapter = new RestAdapter.Builder()
+                .setEndpoint(builder.toString())
+                .build();
+
+        HashMap<String, String> options = new HashMap<>();*/
+        /*options.put("Accept", "application/json");
+        options.put("Content-Type", "application/json");*/
+        /*options.put("Username","ali.naqi");
+        options.put("Password","0%t1y0ETlYiE^Um%HQ%Qa%W$");
+*/
+        //Long lastSyncTimeStamp =  Utility.getPreferredLastSync(getContext());
+
+        /*String UserName = "ali.naqi";
+        String Password = "0%t1y0ETlYiE^Um%HQ%Qa%W$";
+        //AccountManager accountManager = (AccountManager) getContext().getSystemService(Context.ACCOUNT_SERVICE);
+        final String authenticationHeader = "Basic " + Base64.encodeToString(
+                (UserName+ ":" + Password).getBytes(),
+                Base64.NO_WRAP);
+
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+                .connectTimeout(60000, TimeUnit.MILLISECONDS)
+                .readTimeout(60000, TimeUnit.MILLISECONDS)
+                .cache(null);
+
+        //TODO Remove this if you don't have a self cert
+        *//*
+        if(Utility.getSSLSocketFactory() != null){
+            clientBuilder
+                    .sslSocketFactory(Utility.getSSLSocketFactory())
+                    .hostnameVerifier(Utility.getHostnameVerifier());
+        }
+        */
+
+
+        /*Interceptor basicAuthenticatorInterceptor = new Interceptor() {
+            @Override
+            public okhttp3.Response intercept(Chain chain) throws IOException {
+                Request request = chain.request();
+                Request authenticateRequest = request.newBuilder()
+                        .addHeader("Authorization", authenticationHeader)
+                        .addHeader("Accept", "application/json")
+                        .addHeader("Content-Type", "application/json")
+                        .build();
+                return chain.proceed(authenticateRequest);
+            }
+        };*/
+
+
+        //OkHttpOAuthConsumer consumer = new OkHttpOAuthConsumer(key, secret);
+        //consumer.setSigningStrategy(new QueryStringSigningStrategy());
+        //clientBuilder.addInterceptor(new SigningInterceptor(consumer));
+        //clientBuilder.addInterceptor(basicAuthenticatorInterceptor);
+
+      /*  RequestInterceptor requestInterceptor = new RequestInterceptor() {
+            @Override
+            public void intercept(RequestFacade request) {
+                request.addHeader("User-Agent","AndreEmilio");
+                request.addHeader("Accept", "application/json");
+                request.addHeader("Content-Type", "application/json");
+            }
+        };*/
+
+      /*  OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+                .connectTimeout(60000, TimeUnit.MILLISECONDS)
+                .readTimeout(60000, TimeUnit.MILLISECONDS)
+                .cache(null);
+
+        clientBuilder.addInterceptor(new Interceptor() {
+            @Override
+            public okhttp3.Response intercept(Chain chain) throws IOException {
+                Request.Builder requestBuilder = chain.request().newBuilder();
+                requestBuilder.removeHeader("Content-Type");
+                requestBuilder.addHeader("Content-Type", "application/json");
+                requestBuilder.addHeader("Accept", "application/json");
+                return chain.proceed(requestBuilder.build());
+            }
+        });*/
+
+        final String authenticationHeader = "Basic " + Base64.encodeToString(
+                (Consts.WC_API_KEY+ ":" + Consts.WC_API_SECRET).getBytes(),
+                Base64.NO_WRAP);
+        RequestInterceptor requestInterceptor = new RequestInterceptor() {
+            @Override
+            public void intercept(RequestFacade request) {
+                request.addHeader("User-Agent","AndreEmilio");
+                request.addHeader("Authorization", authenticationHeader);
+                request.addHeader("Accept", "application/json");
+                request.addHeader("Content-Type", "application/json");
+
+            }
+        };
+        /*RequestInterceptor requestInterceptor = new RequestInterceptor() {
+            @Override
+            public void intercept(RequestFacade request) {
+                request.addHeader("User-Agent", "AndreEmilio");
+                request.addHeader("Content-Type", "application/json");
+
+            }
+        };*/
+
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(wcBuilder.isHttps() ? "https://" : "http://");
+        builder.append(wcBuilder.getBaseUrl() + "/");
+        builder.append("wc-api/v3");
+        Log.i("Insert Order builder",builder.toString());
+        RestAdapter adapter = new RestAdapter.Builder()
+                .setEndpoint(builder.toString())
+                .setRequestInterceptor(requestInterceptor)
+                .build();
+
+        HashMap<String, String> options = new HashMap<>();
+
+        OrdersInterface insertOrderApi = adapter.create(OrdersInterface.class);
+        insertOrderApi.insertOrder(OAuthSigner.getSignature(RequestMethod.POST, Endpoints.ORDERS_ENDPOINT, null),order, new Callback<Response>() {
+            @Override
+            public void success(Response response1, Response response) {
+
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.e(" Error ", " Error Cause: " + error.getCause());
+                error.printStackTrace();
+                fetched.Callback(null, error);
+            }
+        });
+    }
+
+    public void updateOrder(String orderNumber, OrderUpdate orderUpdate,final ListCallbacks fetched){
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(wcBuilder.isHttps() ? "https://" : "http://");
+        builder.append(wcBuilder.getBaseUrl() + "/");
+        builder.append("wc-api/v3");
+        Log.i(TAG,builder.toString());
+        RestAdapter adapter = new RestAdapter.Builder()
+                .setEndpoint(builder.toString())
+                .build();
+
+        System.gc();
+        HashMap<String, String> params = new HashMap<>();
+        params.put("Order Number",orderNumber);
+        params.put("Order Update",String.valueOf(orderUpdate));
+        OrdersInterface api = adapter.create(OrdersInterface.class);
+
+        api.updateOrder(OAuthSigner.getSignature(params,RequestMethod.PUT, Endpoints.ORDERS_ENDPOINT), new Callback<Response>() {
+            @Override
+            public void success(Response response1, Response response) {
+
+            }
+            @Override
+            public void failure(RetrofitError error) {
+
+                error.printStackTrace();
+                fetched.Callback(null, error);
+            }
+        });
 
 
     }
@@ -175,6 +377,8 @@ public class WooCommerce {
                 .setEndpoint(builder.toString())
                 .build();
 
+        System.gc();
+
         ProductsInterface api = adapter.create(ProductsInterface.class);
 
         api.getProducts(OAuthSigner.getSignature(RequestMethod.GET, Endpoints.PRODUCTS_ENDPOINT, params), new Callback<Response>() {
@@ -193,6 +397,7 @@ public class WooCommerce {
                     fetched.Callback(null, error);
                 }
             }
+
             @Override
             public void failure(RetrofitError error) {
 

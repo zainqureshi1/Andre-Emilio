@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.e2esp.andreemilio.interfaces.ListCallbacks;
 import com.e2esp.andreemilio.interfaces.ObjectCallbacks;
@@ -61,6 +62,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import retrofit.RetrofitError;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Zain on 2/18/2017.
@@ -93,6 +96,56 @@ public class AndreEmilioSyncAdapter extends AbstractThreadedSyncAdapter {
 
     public AndreEmilioSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
+    }
+
+    public WooCommerce getWooCommerceApiHandler() {
+
+        Long lastSyncTimeStamp =  Utility.getPreferredLastSync(getContext());
+
+        AccountManager accountManager = (AccountManager) getContext().getSystemService(Context.ACCOUNT_SERVICE);
+        final String authenticationHeader = "Basic " + Base64.encodeToString(
+                (Consts.WC_API_KEY + ":" + Consts.WC_API_SECRET).getBytes(),
+                Base64.NO_WRAP);
+
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+                .connectTimeout(60000, TimeUnit.MILLISECONDS)
+                .readTimeout(60000, TimeUnit.MILLISECONDS)
+                .cache(null);
+
+        //TODO Remove this if you don't have a self cert
+        /*
+        if(Utility.getSSLSocketFactory() != null){
+            clientBuilder
+                    .sslSocketFactory(Utility.getSSLSocketFactory())
+                    .hostnameVerifier(Utility.getHostnameVerifier());
+        }
+        */
+
+        Interceptor basicAuthenticatorInterceptor = new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request request = chain.request();
+                Request authenticateRequest = request.newBuilder()
+                        .addHeader("Authorization", authenticationHeader)
+                        .addHeader("Accept", "application/json")
+                        .addHeader("Content-Type", "application/json")
+                        .build();
+                return chain.proceed(authenticateRequest);
+            }
+        };
+
+
+        //OkHttpOAuthConsumer consumer = new OkHttpOAuthConsumer(key, secret);
+        //consumer.setSigningStrategy(new QueryStringSigningStrategy());
+        //clientBuilder.addInterceptor(new SigningInterceptor(consumer));
+        clientBuilder.addInterceptor(basicAuthenticatorInterceptor);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .client(clientBuilder.build())
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+
+        return retrofit.create(WooCommerce.class);
     }
 
     @Override
@@ -129,6 +182,8 @@ public class AndreEmilioSyncAdapter extends AbstractThreadedSyncAdapter {
                         .addHeader("Accept", "application/json")
                         .addHeader("Content-Type", "application/json")
                         .build();
+
+                Log.i("Orders ","Insert Order");
                 return chain.proceed(authenticateRequest);
             }
         };
@@ -357,12 +412,14 @@ public class AndreEmilioSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 //if ((sizePageProduct * pageProduct) < sizeProducts) {
                 // TODO : SYNC : Use above condition instead of following
-                if (count >= sizePageProduct) {
+                /*if (count >= sizePageProduct) {
                     pageProduct++;
                     synchronizeBatchProducts(date);
                 } else {
                     finalizeSyncProducts();
-                }
+                }*/
+
+                finalizeSyncProducts();
             }
         });
 

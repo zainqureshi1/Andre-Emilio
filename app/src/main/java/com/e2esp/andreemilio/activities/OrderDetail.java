@@ -2,6 +2,8 @@ package com.e2esp.andreemilio.activities;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,7 +23,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.e2esp.andreemilio.applications.AndreEmilio;
+import com.e2esp.andreemilio.interfaces.ListCallbacks;
+import com.e2esp.andreemilio.models.orders.OrderResponse;
+import com.e2esp.andreemilio.woocommerce.WooCommerce;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.picasso.Picasso;
@@ -40,6 +47,11 @@ import com.e2esp.andreemilio.models.orders.OrderUpdate;
 import com.e2esp.andreemilio.models.orders.OrderUpdateValues;
 import com.e2esp.andreemilio.models.products.Product;
 import com.e2esp.andreemilio.models.products.Variation;
+
+import retrofit.RestAdapter;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Zain on 2/18/2017.
@@ -424,7 +436,7 @@ public class OrderDetail extends AppCompatActivity implements LoaderManager.Load
 
     private void getNotes() {
         // TODO:Z
-        /*Woocommerce woocommerceApi = ((Dezynish) getApplication()).getWoocommerceApiHandler();
+        /*Woocommerce woocommerceApi = ((AndreEmilio) getApplication()).getWoocommerceApiHandler();
         HashMap<String, String> options = new HashMap<>();
         Call<Notes> call = woocommerceApi.getOrdersNotes(options, String.valueOf(mOrderSelected.getId()));
         call.enqueue(new Callback<Notes>() {
@@ -485,7 +497,18 @@ public class OrderDetail extends AppCompatActivity implements LoaderManager.Load
         orderUpdate.setOrder(orderUpdateValues);
 
         // TODO:Z
-        /*Woocommerce woocommerceApi = ((Dezynish) getApplication()).getWoocommerceApiHandler();
+
+
+        WooCommerce.getInstance().updateOrder(mOrderSelected.getOrderNumber() +"", orderUpdate, new ListCallbacks(){
+
+
+            @Override
+            public void Callback(List<?> content, Throwable error) {
+
+                    mProgress.dismiss();
+            }
+        });
+        /*WooCommerce woocommerceApi = WooCommerce.getInstance();
         Call<OrderResponse> call = woocommerceApi.updateOrder(mOrderSelected.getOrderNumber(), orderUpdate);
         call.enqueue(new Callback<OrderResponse>() {
 
@@ -503,99 +526,99 @@ public class OrderDetail extends AppCompatActivity implements LoaderManager.Load
                 if (statusCode == 200) {
                     Order order = response.body().getOrder();
                     ContentValues orderValues = new ContentValues();
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_ID, order.getId());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_ORDER_NUMBER, order.getOrderNumber());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_ID, order.getId());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_ORDER_NUMBER, order.getOrderNumber());
                     if(order.getCreatedAt() != null) {
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CREATED_AT, DezynishContract.getDbDateString(order.getCreatedAt()));
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CREATED_AT, AndreEmilioContract.getDbDateString(order.getCreatedAt()));
                     }
                     if(order.getUpdatedAt() != null) {
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_UPDATED_AT, DezynishContract.getDbDateString(order.getUpdatedAt()));
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_UPDATED_AT, AndreEmilioContract.getDbDateString(order.getUpdatedAt()));
                     }
                     if(order.getCompletedAt() != null) {
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_COMPLETED_AT, DezynishContract.getDbDateString(order.getCompletedAt()));
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_COMPLETED_AT, AndreEmilioContract.getDbDateString(order.getCompletedAt()));
                     }
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_STATUS, order.getStatus());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_CURRENCY, order.getCurrency());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_TOTAL, order.getTotal());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_SUBTOTAL, order.getSubtotal());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_TOTAL_LINE_ITEMS_QUANTITY, order.getTotalLineItemsQuantity());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_TOTAL_TAX, order.getTotalTax());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_TOTAL_SHIPPING, order.getTotalShipping());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_CART_TAX, order.getCartTax());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_SHIPPING_TAX, order.getShippingTax());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_TOTAL_DISCOUNT, order.getTotalDiscount());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_CART_DISCOUNT, order.getCartDiscount());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_ORDER_DISCOUNT, order.getOrderDiscount());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_SHIPPING_METHODS, order.getShippingMethods());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_NOTE, order.getNote());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_VIEW_ORDER_URL, order.getViewOrderUrl());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_PAYMENT_DETAILS_METHOD_ID, order.getPaymentDetails().getMethodId());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_PAYMENT_DETAILS_METHOD_TITLE, order.getPaymentDetails().getMethodTitle());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_PAYMENT_DETAILS_PAID, order.getPaymentDetails().isPaid() ? "1" : "0");
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_BILLING_FIRST_NAME, order.getBillingAddress().getFirstName());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_BILLING_LAST_NAME , order.getBillingAddress().getLastName());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_BILLING_COMPANY, order.getBillingAddress().getCompany());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_BILLING_ADDRESS_1, order.getBillingAddress().getAddressOne());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_BILLING_ADDRESS_2, order.getBillingAddress().getAddressTwo());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_BILLING_CITY, order.getBillingAddress().getCity());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_BILLING_STATE, order.getBillingAddress().getState());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_BILLING_POSTCODE, order.getBillingAddress().getPostcode());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_BILLING_COUNTRY, order.getBillingAddress().getCountry());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_BILLING_EMAIL, order.getBillingAddress().getEmail());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_BILLING_PHONE, order.getBillingAddress().getPhone());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_SHIPPING_FIRST_NAME, order.getShippingAddress().getFirstName());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_SHIPPING_LAST_NAME, order.getShippingAddress().getLastName());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_SHIPPING_COMPANY, order.getShippingAddress().getCompany());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_SHIPPING_ADDRESS_1, order.getShippingAddress().getAddressOne());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_SHIPPING_ADDRESS_2, order.getShippingAddress().getAddressTwo());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_SHIPPING_CITY, order.getShippingAddress().getCity());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_SHIPPING_STATE, order.getShippingAddress().getState());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_SHIPPING_POSTCODE, order.getShippingAddress().getPostcode());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_SHIPPING_COUNTRY, order.getShippingAddress().getCountry());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_ID, order.getCustomerId());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_EMAIL, order.getCustomer().getEmail());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_FIRST_NAME, order.getCustomer().getFirstName());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_LAST_NAME, order.getCustomer().getLastName());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_USERNAME, order.getCustomer().getUsername());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_LAST_ORDER_ID, order.getCustomer().getLastOrderId());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_STATUS, order.getStatus());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CURRENCY, order.getCurrency());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_TOTAL, order.getTotal());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_SUBTOTAL, order.getSubtotal());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_TOTAL_LINE_ITEMS_QUANTITY, order.getTotalLineItemsQuantity());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_TOTAL_TAX, order.getTotalTax());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_TOTAL_SHIPPING, order.getTotalShipping());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CART_TAX, order.getCartTax());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_SHIPPING_TAX, order.getShippingTax());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_TOTAL_DISCOUNT, order.getTotalDiscount());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CART_DISCOUNT, order.getCartDiscount());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_ORDER_DISCOUNT, order.getOrderDiscount());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_SHIPPING_METHODS, order.getShippingMethods());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_NOTE, order.getNote());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_VIEW_ORDER_URL, order.getViewOrderUrl());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_PAYMENT_DETAILS_METHOD_ID, order.getPaymentDetails().getMethodId());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_PAYMENT_DETAILS_METHOD_TITLE, order.getPaymentDetails().getMethodTitle());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_PAYMENT_DETAILS_PAID, order.getPaymentDetails().isPaid() ? "1" : "0");
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_BILLING_FIRST_NAME, order.getBillingAddress().getFirstName());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_BILLING_LAST_NAME , order.getBillingAddress().getLastName());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_BILLING_COMPANY, order.getBillingAddress().getCompany());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_BILLING_ADDRESS_1, order.getBillingAddress().getAddressOne());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_BILLING_ADDRESS_2, order.getBillingAddress().getAddressTwo());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_BILLING_CITY, order.getBillingAddress().getCity());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_BILLING_STATE, order.getBillingAddress().getState());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_BILLING_POSTCODE, order.getBillingAddress().getPostcode());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_BILLING_COUNTRY, order.getBillingAddress().getCountry());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_BILLING_EMAIL, order.getBillingAddress().getEmail());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_BILLING_PHONE, order.getBillingAddress().getPhone());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_SHIPPING_FIRST_NAME, order.getShippingAddress().getFirstName());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_SHIPPING_LAST_NAME, order.getShippingAddress().getLastName());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_SHIPPING_COMPANY, order.getShippingAddress().getCompany());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_SHIPPING_ADDRESS_1, order.getShippingAddress().getAddressOne());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_SHIPPING_ADDRESS_2, order.getShippingAddress().getAddressTwo());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_SHIPPING_CITY, order.getShippingAddress().getCity());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_SHIPPING_STATE, order.getShippingAddress().getState());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_SHIPPING_POSTCODE, order.getShippingAddress().getPostcode());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_SHIPPING_COUNTRY, order.getShippingAddress().getCountry());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_ID, order.getCustomerId());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_EMAIL, order.getCustomer().getEmail());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_FIRST_NAME, order.getCustomer().getFirstName());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_LAST_NAME, order.getCustomer().getLastName());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_USERNAME, order.getCustomer().getUsername());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_LAST_ORDER_ID, order.getCustomer().getLastOrderId());
                     if(order.getCustomer().getLastOrderDate() != null) {
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_LAST_ORDER_DATE, DezynishContract.getDbDateString(order.getCustomer().getLastOrderDate()));
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_LAST_ORDER_DATE, AndreEmilioContract.getDbDateString(order.getCustomer().getLastOrderDate()));
                     }
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_ORDERS_COUNT, order.getCustomer().getOrdersCount());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_TOTAL_SPEND, order.getCustomer().getTotalSpent());
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_AVATAR_URL, order.getCustomer().getAvatarUrl());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_ORDERS_COUNT, order.getCustomer().getOrdersCount());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_TOTAL_SPEND, order.getCustomer().getTotalSpent());
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_AVATAR_URL, order.getCustomer().getAvatarUrl());
                     if(order.getCustomer().getBillingAddress()!= null){
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_FIRST_NAME, order.getCustomer().getBillingAddress().getFirstName());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_LAST_NAME, order.getCustomer().getBillingAddress().getLastName());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_COMPANY, order.getCustomer().getBillingAddress().getCompany());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_ADDRESS_1, order.getCustomer().getBillingAddress().getAddressOne());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_ADDRESS_2, order.getCustomer().getBillingAddress().getAddressTwo());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_CITY, order.getCustomer().getBillingAddress().getCity());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_STATE, order.getCustomer().getBillingAddress().getState());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_POSTCODE, order.getCustomer().getBillingAddress().getPostcode());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_COUNTRY, order.getCustomer().getBillingAddress().getCountry());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_EMAIL, order.getCustomer().getBillingAddress().getEmail());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_PHONE, order.getCustomer().getBillingAddress().getPhone());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_FIRST_NAME, order.getCustomer().getBillingAddress().getFirstName());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_LAST_NAME, order.getCustomer().getBillingAddress().getLastName());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_COMPANY, order.getCustomer().getBillingAddress().getCompany());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_ADDRESS_1, order.getCustomer().getBillingAddress().getAddressOne());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_ADDRESS_2, order.getCustomer().getBillingAddress().getAddressTwo());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_CITY, order.getCustomer().getBillingAddress().getCity());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_STATE, order.getCustomer().getBillingAddress().getState());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_POSTCODE, order.getCustomer().getBillingAddress().getPostcode());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_COUNTRY, order.getCustomer().getBillingAddress().getCountry());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_EMAIL, order.getCustomer().getBillingAddress().getEmail());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_BILLING_PHONE, order.getCustomer().getBillingAddress().getPhone());
                     }
                     if(order.getCustomer().getShippingAddress() != null){
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_FIRST_NAME, order.getCustomer().getShippingAddress().getFirstName());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_LAST_NAME , order.getCustomer().getShippingAddress().getLastName());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_COMPANY, order.getCustomer().getShippingAddress().getCompany());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_ADDRESS_1, order.getCustomer().getShippingAddress().getAddressOne());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_ADDRESS_2, order.getCustomer().getShippingAddress().getAddressTwo());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_CITY, order.getCustomer().getShippingAddress().getCity());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_STATE, order.getCustomer().getShippingAddress().getState());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_POSTCODE, order.getCustomer().getShippingAddress().getPostcode());
-                        orderValues.put(DezynishContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_COUNTRY, order.getCustomer().getShippingAddress().getCountry());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_FIRST_NAME, order.getCustomer().getShippingAddress().getFirstName());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_LAST_NAME , order.getCustomer().getShippingAddress().getLastName());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_COMPANY, order.getCustomer().getShippingAddress().getCompany());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_ADDRESS_1, order.getCustomer().getShippingAddress().getAddressOne());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_ADDRESS_2, order.getCustomer().getShippingAddress().getAddressTwo());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_CITY, order.getCustomer().getShippingAddress().getCity());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_STATE, order.getCustomer().getShippingAddress().getState());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_POSTCODE, order.getCustomer().getShippingAddress().getPostcode());
+                        orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_CUSTOMER_SHIPPING_COUNTRY, order.getCustomer().getShippingAddress().getCountry());
                     }
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_JSON, mGson.toJson(order));
-                    orderValues.put(DezynishContract.OrdersEntry.COLUMN_ENABLE, 1);
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_JSON, mGson.toJson(order));
+                    orderValues.put(AndreEmilioContract.OrdersEntry.COLUMN_ENABLE, 1);
 
-                    Uri insertedOrderUri = getContentResolver().insert(DezynishContract.OrdersEntry.CONTENT_URI, orderValues);
+                    Uri insertedOrderUri = getContentResolver().insert(AndreEmilioContract.OrdersEntry.CONTENT_URI, orderValues);
                     long orderId = ContentUris.parseId(insertedOrderUri);
                     Log.d(LOG_TAG, "Orders successful updated ID: " + orderId);
 
-                    getContentResolver().notifyChange(DezynishContract.OrdersEntry.CONTENT_URI, null, false);
+                    getContentResolver().notifyChange(AndreEmilioContract.OrdersEntry.CONTENT_URI, null, false);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
